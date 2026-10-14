@@ -14,10 +14,11 @@
     var result = "";
     for( var domain of domains )
     {
-        var check = await fetch(domain);
-        result += `${domain},${check.ok}\n`;
+        let ok = false;
+        try { ok = (await fetch(domain, { signal: AbortSignal.timeout(3000) })).ok; } catch {}
+        result += `${domain},${ok}\n`;
     }
-
+    
     // if any domain has failed, return the canaryerror. otherwise return the canaryok
     var somethingOffline = /false/.test(result);
     if(somethingOffline)
